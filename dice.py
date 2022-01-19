@@ -41,15 +41,15 @@ class Dice:
                     swapped = True
             j = j - 1
 
-    def roll(self):
-        self.hold()
-        self.unHold()
+    def roll(self, c):
+        # self.hold()
+        # self.unHold()
         for i in range(0, len(self.dieArray)):
             if self.dieArray[i].hold == False:
                 self.dieArray[i].value = random.randint(1, 6)
-        self.draw()
+        self.draw(c)
 
-    def draw(self, c, x = 15, y = 10):
+    def draw(self, c, x = 13, y = 10):
         self.die1.draw(c, self.die1.value, x, y)
         self.die2.draw(c, self.die2.value, x, y + 60)
         self.die3.draw(c, self.die3.value, x, y + 120)

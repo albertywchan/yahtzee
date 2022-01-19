@@ -1,7 +1,7 @@
 # imports
-from re import M
 from tkinter import *
 from tkinter import ttk
+from dice import Dice
 
 # root
 root = Tk()
@@ -17,6 +17,11 @@ class Game:
         self.frm = Frame(master)
         self.frm.grid()
         self.master = master
+        self.initialize()
+        self.dice = Dice()
+        self.dice.roll(self.canvas)
+
+    def initialize(self):
         self.createDiceFrame()
         self.createUpperFrame()
         self.createLowerFrame()
@@ -26,15 +31,15 @@ class Game:
     def createDiceFrame(self):
         diceFrm = ttk.LabelFrame(self.master, text="Yahtzee", labelanchor=N)
         diceFrm.grid(row=0, rowspan=3, sticky=N, padx=(10, 5), pady=10)
-        self.holdLbl = ttk.Label(diceFrm, text="Hold")
-        self.holdLbl.grid(padx=10, pady=5)
-        holdChks = []
+        holdLbl = ttk.Label(diceFrm, text="Hold")
+        holdLbl.grid(padx=10, pady=5)
+        self.holdChks = []
         for i in range(5):
             tmpChk = ttk.Checkbutton(diceFrm)
             tmpChk.grid(row=i+1)
-            holdChks.append(tmpChk)
-        self.diceLbl = ttk.Label(diceFrm, text="Dice")
-        self.diceLbl.grid(row=0, column=1)
+            self.holdChks.append(tmpChk)
+        diceLbl = ttk.Label(diceFrm, text="Dice")
+        diceLbl.grid(row=0, column=1)
         self.canvas = Canvas(diceFrm, bd=0, highlightthickness=0,
                              width=75, height=310, bg="Dark Green")
         self.canvas.grid(row=1, column=1, rowspan=5, padx=10)
@@ -53,34 +58,29 @@ class Game:
         upperFrm = ttk.LabelFrame(
             self.master, text="Upper Score", labelanchor=N)
         upperFrm.grid(row=0, column=1, sticky=N+E+W, padx=5, pady=(10, 5))
-        self.upperLbls = []
         self.upperValueLbls = []
         lblText = ["Ones", "Twos", "Threes", "Fours", "Fives", "Sixes"]
         for i in range(5):
             tempLbl = ttk.Label(upperFrm, text=lblText[i])
             tempLbl.grid(row=i, column=0, sticky=W, padx=10)
-            self.upperLbls.append(tempLbl)
             tempValueLbl = ttk.Label(upperFrm, text="0")
             tempValueLbl.grid(row=i, column=1, sticky=E, padx=10)
             self.upperValueLbls.append(tempValueLbl)
         sixesLbl = ttk.Label(upperFrm, text=lblText[5])
         sixesLbl.grid(row=5, column=0, sticky=W, padx=10, pady=(0, 20))
-        self.upperLbls.append(sixesLbl)
         sixesValueLbl = ttk.Label(upperFrm, text="0")
         sixesValueLbl.grid(row=5, column=1, sticky=E, padx=10, pady=(0, 20))
         self.upperValueLbls.append(sixesValueLbl)
-        self.totalLbl = ttk.Label(upperFrm, text="Total:")
-        self.totalLbl.grid(sticky=W, row=6, column=0, padx=10)
+        totalLbl = ttk.Label(upperFrm, text="Total:")
+        totalLbl.grid(sticky=W, row=6, column=0, padx=10)
         self.totalValueLbl = ttk.Label(upperFrm, text="0")
         self.totalValueLbl.grid(row=6, column=1, sticky=E, padx=10)
-        self.bonusLbl = ttk.Label(upperFrm, text="Bonus:")
-        self.bonusLbl.grid(sticky=W, row=7, column=0, padx=10)
+        bonusLbl = ttk.Label(upperFrm, text="Bonus:")
+        bonusLbl.grid(sticky=W, row=7, column=0, padx=10)
         self.bonusValueLbl = ttk.Label(upperFrm, text="0")
         self.bonusValueLbl.grid(row=7, column=1, sticky=E, padx=10)
-        self.upperTotalLbl = ttk.Label(
-            upperFrm, text="Upper Total:      ")
-        self.upperTotalLbl.grid(
-            sticky=W, row=8, column=0, padx=10, pady=(0, 10))
+        upperTotalLbl = ttk.Label(upperFrm, text="Upper Total:      ")
+        upperTotalLbl.grid(sticky=W, row=8, column=0, padx=10, pady=(0, 10))
         self.upperTotalValueLbl = ttk.Label(upperFrm, text="0")
         self.upperTotalValueLbl.grid(
             row=8, column=1, sticky=E, padx=10, pady=(0, 10))
@@ -90,34 +90,30 @@ class Game:
             self.master, text="Lower Score", labelanchor=N)
         lowerFrm.grid(row=1, column=1, rowspan=2,
                       sticky=N, padx=5, pady=(5, 10))
-        self.upperLbls = []
         self.upperValueLbls = []
         lblText = ["Three of a Kind", "Four of a Kind", "Full House",
                    "Small Straight", "Large Straight", "Yahtzee", "Chance"]
         for i in range(6):
             tempLbl = ttk.Label(lowerFrm, text=lblText[i])
             tempLbl.grid(row=i, column=0, sticky=W, padx=10)
-            self.upperLbls.append(tempLbl)
             tempValueLbl = ttk.Label(lowerFrm, text="0")
             tempValueLbl.grid(row=i, column=1, sticky=E, padx=10)
             self.upperValueLbls.append(tempValueLbl)
         chanceLbl = ttk.Label(lowerFrm, text=lblText[6])
         chanceLbl.grid(row=6, column=0, sticky=W, padx=10, pady=(0, 20))
-        self.upperLbls.append(chanceLbl)
         chanceValueLbl = ttk.Label(lowerFrm, text="0")
         chanceValueLbl.grid(row=6, column=1, sticky=E, padx=10, pady=(0, 20))
         self.upperValueLbls.append(chanceValueLbl)
-        self.lowerTotalLbl = ttk.Label(lowerFrm, text="Lower Total:")
-        self.lowerTotalLbl.grid(sticky=W, row=7, column=0, padx=10)
+        lowerTotalLbl = ttk.Label(lowerFrm, text="Lower Total:")
+        lowerTotalLbl.grid(sticky=W, row=7, column=0, padx=10)
         self.lowerTotalValueLbl = ttk.Label(lowerFrm, text="0")
         self.lowerTotalValueLbl.grid(row=7, column=1, sticky=E, padx=10)
-        self.yahtzeeBonusLbl = ttk.Label(lowerFrm, text="Yahtzee Bonus:")
-        self.yahtzeeBonusLbl.grid(sticky=W, row=8, column=0, padx=10)
+        yahtzeeBonusLbl = ttk.Label(lowerFrm, text="Yahtzee Bonus:")
+        yahtzeeBonusLbl.grid(sticky=W, row=8, column=0, padx=10)
         self.yahtzeeBonusValueLbl = ttk.Label(lowerFrm, text="0")
         self.yahtzeeBonusValueLbl.grid(row=8, column=1, sticky=E, padx=10)
-        self.combTotalLbl = ttk.Label(lowerFrm, text="Combined Total:")
-        self.combTotalLbl.grid(sticky=W, row=9, column=0,
-                               padx=10, pady=(0, 10))
+        combTotalLbl = ttk.Label(lowerFrm, text="Combined Total:")
+        combTotalLbl.grid(sticky=W, row=9, column=0, padx=10, pady=(0, 10))
         self.combTotalValueLbl = ttk.Label(lowerFrm, text="0")
         self.combTotalValueLbl.grid(
             row=9, column=1, sticky=E, padx=10, pady=(0, 10))
