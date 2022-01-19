@@ -55,7 +55,7 @@ class Game:
         upperFrm.grid(row=0, column=1, sticky=N+E+W, padx=5, pady=(10, 5))
         self.upperLbls = []
         self.upperValueLbls = []
-        lblText = ["Ones", "Twos", "Threes", "Fours", "Fives"]
+        lblText = ["Ones", "Twos", "Threes", "Fours", "Fives", "Sixes"]
         for i in range(5):
             tempLbl = ttk.Label(upperFrm, text=lblText[i])
             tempLbl.grid(row=i, column=0, sticky=W, padx=10)
@@ -63,8 +63,8 @@ class Game:
             tempValueLbl = ttk.Label(upperFrm, text="0")
             tempValueLbl.grid(row=i, column=1, sticky=E, padx=10)
             self.upperValueLbls.append(tempValueLbl)
-        sixesLbl = ttk.Label(upperFrm, text="Sixes:")
-        sixesLbl.grid(sticky=W, row=5, column=0, padx=10, pady=(0, 20))
+        sixesLbl = ttk.Label(upperFrm, text=lblText[5])
+        sixesLbl.grid(row=5, column=0, sticky=W, padx=10, pady=(0, 20))
         self.upperLbls.append(sixesLbl)
         sixesValueLbl = ttk.Label(upperFrm, text="0")
         sixesValueLbl.grid(row=5, column=1, sticky=E, padx=10, pady=(0, 20))
@@ -93,7 +93,7 @@ class Game:
         self.upperLbls = []
         self.upperValueLbls = []
         lblText = ["Three of a Kind", "Four of a Kind", "Full House",
-                   "Small Straight", "Large Straight", "Yahtzee"]
+                   "Small Straight", "Large Straight", "Yahtzee", "Chance"]
         for i in range(6):
             tempLbl = ttk.Label(lowerFrm, text=lblText[i])
             tempLbl.grid(row=i, column=0, sticky=W, padx=10)
@@ -101,8 +101,8 @@ class Game:
             tempValueLbl = ttk.Label(lowerFrm, text="0")
             tempValueLbl.grid(row=i, column=1, sticky=E, padx=10)
             self.upperValueLbls.append(tempValueLbl)
-        chanceLbl = ttk.Label(lowerFrm, text="Chance:")
-        chanceLbl.grid(sticky=W, row=6, column=0, padx=10, pady=(0, 20))
+        chanceLbl = ttk.Label(lowerFrm, text=lblText[6])
+        chanceLbl.grid(row=6, column=0, sticky=W, padx=10, pady=(0, 20))
         self.upperLbls.append(chanceLbl)
         chanceValueLbl = ttk.Label(lowerFrm, text="0")
         chanceValueLbl.grid(row=6, column=1, sticky=E, padx=10, pady=(0, 20))
@@ -139,7 +139,7 @@ class Game:
         self.grandTotalLbl = ttk.Label(self.master, text="Grand\nTotal\n0", font=(
             "", "18", "bold"), borderwidth=5, relief="ridge", anchor="center", justify="center", width=12)
         self.grandTotalLbl.grid(
-            row=2, column=2, sticky=N+E+W, padx=(5, 10), pady=(5, 10))
+            row=2, column=2, sticky=N+E+W, padx=(5, 10), pady=10)
 
 
 # main
