@@ -7,7 +7,6 @@ class Die:
         self.length = 50
         self.radius = self.length / 5
         self.gap = self.radius / 2
-        self.hold = False
 
     def roll(self):
         self.value = random.randint(1, 6)

@@ -9,11 +9,9 @@ class Dice:
             d = Die(canvas)
             self.diceArray.append(d)
 
-    def roll(self):
-        # self.hold()
-        # self.unHold()
+    def roll(self, holdChkVars):
         for i in range(self.size):
-            if self.diceArray[i].hold == False:
+            if holdChkVars[i].get() == 0:
                 self.diceArray[i].roll()
         self.draw()
 
