@@ -1,40 +1,23 @@
 import random
 
 class Die:
-    def __init__(self, size = 50):
+    def __init__(self, canvas):
         self.value = random.randint(1,6)
-        self.size = size
-        self.radius = self.size / 5
+        self.canvas = canvas
+        self.length = 50
+        self.radius = self.length / 5
         self.gap = self.radius / 2
         self.hold = False
-        self.setSize(size)
-        self.setValue()
-
-    def __str__ (self):
-        strValue = str(self.value)
-        return strValue
-
-    def setValue(self):
-        if self.value >= 1 or self.value <= 6:
-            self.value = self.value + 0
-        else:
-            self.value = 1
-
-    def setSize(self, size):
-        if self.size >= 30 or self.size <= 100:
-            self.size = self.size + 0
-        else:
-            self.size = 50
 
     def roll(self):
         self.value = random.randint(1, 6)
 
-    def draw(self, c, v, x, y):
-            s = self.size
+    def draw(self, x, y):
+            c = self.canvas
+            l = self.length
             r = self.radius
             g = self.gap
-            self.value = v
-            c.create_rectangle(x, y, x+s, y+s, width = 2, outline = "Black", fill = "White")
+            c.create_rectangle(x, y, x+l, y+l, width = 2, outline = "Black", fill = "White")
             if self.value == 1:
                 c.create_oval(x+r+2*g, y+r+2*g, x+2*r+2*g, y+2*r+2*g, fill = "Black")
             elif self.value == 2:
