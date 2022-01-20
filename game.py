@@ -14,24 +14,155 @@ root.resizable(height=0, width=0)
 
 class Game:
     def __init__(self, master):
-        self.strRolls = StringVar()
-        self.strRounds = StringVar()
         self.frm = Frame(master)
         self.frm.grid()
         self.master = master
+        self.intRolls = 0
+        self.intRounds = 0
+        self.strRolls = StringVar()
+        self.strRounds = StringVar()
         self.initialize()
-        self.reset()
+        self.updateRound(True)
+        self.updateRolls(True)
         self.dice = Dice(5, self.canvas)
 
-    def reset(self):
-        self.intRolls = 0
-        self.strRolls.set("0/3 Rolls")
-        self.intRounds = 0
-        self.strRounds.set("Round 0/13")
+    def newRound(self):
+        self.unholdAll()
+        self.disableHoldChecks()
+        self.unholdBtn.config(state="disabled")
+        self.disableScoringOptions()
+        self.canvas.delete("all")
+        self.rollBtn.config(text="Start Round", state="normal")
+        self.updateRound(False)
+        self.updateRolls(True)
+
+    def updateRound(self, reset):
+        if (reset):
+            self.intRounds = 0
+            self.strRounds.set("Round 0/13")
+        else:
+            self.intRounds += 1
+            self.strRounds.set("Round " + str(self.intRounds) + "/13")
+
+    def updateRolls(self, reset):
+        if (reset):
+            self.intRolls = 0
+            self.strRolls.set("0/3 Rolls")
+        else:
+            self.intRolls += 1
+            self.strRolls.set(str(self.intRolls) + "/3 Rolls")
+
+    def roll(self):
+        self.dice.roll(self.holdChkVars)
+        self.enableHoldChecks()
+        self.unholdBtn.config(state="normal")
+        self.enableScoringOptions()
+        text = self.rollBtn.cget("text")
+        if (text != "New Game" and text != "Start Round"):
+            self.updateRolls(False)
+        self.rollBtn.config(text="Roll")
+        if (self.intRolls == 3):
+            self.disableHoldChecks()
+            self.rollBtn.config(state="disabled")
+            self.unholdBtn.config(state="disabled")
+
+    def unholdAll(self):
+        for i in range(5):
+            self.holdChkVars[i].set(0)
+
+    def enableHoldChecks(self):
+        for chk in self.holdChks:
+            chk.config(state="normal")
+
+    def disableHoldChecks(self):
         for chk in self.holdChks:
             chk.config(state="disabled")
-        self.rollBtn.config(text="Start Game")
-        self.unholdBtn.config(state="disabled")
+
+    def enableScoringOptions(self):
+        for i in range(13):
+            if (self.scoringOptionVars[i] == 0):
+                self.scoringOptionBtns[i].config(state="normal")
+
+    def disableScoringOptions(self):
+        for btn in self.scoringOptionBtns:
+            btn.config(state="disabled")
+
+    def score(self, option):
+        score = 0
+        if option == "Ones":
+            self.scoringOptionVars[0] = 1
+            for i in range(5):
+                if self.dice.diceArray[i].value == 1:
+                    score += 1
+            self.upperIntVars[0].set(score)
+        elif option == "Twos":
+            self.scoringOptionVars[1] = 1
+            for i in range(5):
+                if self.dice.diceArray[i].value == 2:
+                    score += 2
+            self.upperIntVars[1].set(score)            
+        elif option == "Threes":
+            self.scoringOptionVars[2] = 1
+            for i in range(5):
+                if self.dice.diceArray[i].value == 3:
+                    score += 3
+            self.upperIntVars[2].set(score)
+        elif option == "Fours":
+            self.scoringOptionVars[3] = 1
+            for i in range(5):
+                if self.dice.diceArray[i].value == 4:
+                    score += 4
+            self.upperIntVars[3].set(score)
+        elif option == "Fives":
+            self.scoringOptionVars[4] = 1
+            for i in range(5):
+                if self.dice.diceArray[i].value == 5:
+                    score += 5
+            self.upperIntVars[4].set(score)
+        elif option == "Sixes":
+            self.scoringOptionVars[5] = 1
+            for i in range(5):
+                if self.dice.diceArray[i].value == 6:
+                    score += 6
+            self.upperIntVars[5].set(score)
+        elif option == "Three of a Kind":
+            self.scoringOptionVars[6] = 1
+            # insert
+            self.upperIntVars[6].set(score)
+        elif option == "Four of a Kind":
+            self.scoringOptionVars[7] = 1
+            # insert
+            self.upperIntVars[7].set(score)
+        elif option == "Full House":
+            self.scoringOptionVars[8] = 1
+            # insert
+            self.upperIntVars[8].set(score)
+        elif option == "Small Straight":
+            self.scoringOptionVars[9] = 1
+            # insert
+            self.upperIntVars[9].set(score)
+        elif option == "Large Straight":
+            self.scoringOptionVars[10] = 1
+            # insert
+            self.upperIntVars[10].set(score)
+        elif option == "Yahtzee":
+            self.scoringOptionVars[11] = 1
+            # insert
+            self.upperIntVars[11].set(score)
+        elif option == "Chance":
+            self.scoringOptionVars[12] = 1
+            for i in range(5):
+                score += self.dice.diceArray[i].value
+            self.upperIntVars[12].set(score)
+        self.updateScore(option, score)
+        self.newRound()
+
+    def updateScore(self, option, score):
+        if (option == "Ones" or option == "Twos"):
+            self.upperIntVars[6].set(self.upperIntVars[6].get()+score)
+            if (self.upperIntVars[6].get() >= 63):
+                self.upperIntVars[7].set(35)
+            self.upperIntVars[8].set(self.upperIntVars[6].get()+self.upperIntVars[7].get())
 
     def initialize(self):
         self.createDiceFrame()
@@ -39,6 +170,10 @@ class Game:
         self.createLowerFrame()
         self.createScoringOptions()
         self.createGrandTotal()
+        self.disableHoldChecks()
+        self.unholdBtn.config(state="disabled")
+        self.disableScoringOptions()
+        self.scoringOptionVars = [0] * 13
 
     def createDiceFrame(self):
         diceFrm = ttk.LabelFrame(self.master, text="Yahtzee", labelanchor=N)
@@ -57,8 +192,8 @@ class Game:
         self.canvas = Canvas(diceFrm, bd=0, highlightthickness=0,
                              width=75, height=310, bg="dark green")
         self.canvas.grid(row=1, column=1, rowspan=5, padx=10)
-        self.rollBtn = ttk.Button(
-            diceFrm, text="Start Game", command=lambda: self.roll())
+        self.rollBtn = ttk.Button(diceFrm, text="New Game")
+        self.rollBtn.config(command=lambda: self.roll())
         self.rollBtn.grid(row=6, columnspan=2, sticky=NSEW,
                           padx=8, pady=(17, 5))
         self.unholdBtn = ttk.Button(
@@ -139,7 +274,8 @@ class Game:
         btnText = ["Ones", "Twos", "Threes", "Fours", "Fives", "Sixes", "Three of a Kind",
                    "Four of a Kind", "Full House", "Small Straight", "Large Straight", "Yahtzee", "Chance"]
         for i in range(13):
-            tempBtn = ttk.Button(optionFrm, text=btnText[i], width=12)
+            tempBtn = ttk.Button(
+                optionFrm, text=btnText[i], width=12, command=lambda option=btnText[i]: self.score(option))
             if (i == 0):
                 tempBtn.grid(sticky=NSEW, padx=(6, 5), pady=(5, 0))
             elif (i == 12):
@@ -153,49 +289,6 @@ class Game:
             "", "18", "bold"), borderwidth=5, relief="ridge", anchor="center", justify="center", width=12)
         self.grandTotalLbl.grid(
             row=2, column=2, sticky=N+E+W, padx=(5, 10), pady=10)
-
-    def roll(self):
-        if (self.intRounds == 0):
-            self.intRounds = 1
-            self.strRounds.set("Round " + str(self.intRounds) + "/13")
-            for chk in self.holdChks:
-                chk.config(state="normal")
-            self.rollBtn.config(text="Roll")
-            self.unholdBtn.config(state="normal")
-            self.dice.roll(self.holdChkVars)
-        else:
-            self.dice.roll(self.holdChkVars)
-            self.intRolls += 1
-            self.strRolls.set(str(self.intRolls) + "/3 Rolls")
-            if (self.intRolls == 3):
-                self.rollBtn.config(state="disabled")
-                self.unholdBtn.config(state="disabled")
-
-    def unholdAll(self):
-        for i in range(5):
-            self.holdChkVars[i].set(0)
-
-    def score(self, option):
-        score = 0
-        print(option)
-        if option == "Ones":
-            for i in range(5):
-                if self.dice.diceArray[i].value == 1:
-                    score += 1
-            self.upperIntVars[0].set(score)
-            self.scoringOptionBtns[0].config(state="disabled")
-        elif option == "Twos":
-            for i in range(5):
-                if self.dice.diceArray[i].value == 2:
-                    score += 2
-            self.upperIntVars[1].set(score)
-            self.scoringOptionBtns[1].config(state="disabled")
-        self.update(option, score)
-
-    def update(self, option, score):
-        if (option == "Ones" or option == "Twos"):
-            self.upperIntVars[6].set(self.upperIntVars[6]+score)
-            self.upperIntVars[6].set(self.upperIntVars[6]+self.upperIntVars[7])
 
 
 # main
