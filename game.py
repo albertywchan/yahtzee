@@ -93,74 +93,54 @@ class Game:
         a = self.dice.getValues()
         if option == "Ones":
             self.scoringOptionVars[0] = 1
-            for i in range(5):
-                if self.dice.diceArray[i].value == 1:
-                    score += 1
+            score = Counter(a)[1]
             self.upperIntVars[0].set(score)
         elif option == "Twos":
             self.scoringOptionVars[1] = 1
-            for i in range(5):
-                if self.dice.diceArray[i].value == 2:
-                    score += 2
+            score = Counter(a)[2]
             self.upperIntVars[1].set(score)
         elif option == "Threes":
             self.scoringOptionVars[2] = 1
-            for i in range(5):
-                if self.dice.diceArray[i].value == 3:
-                    score += 3
+            score = Counter(a)[3]
             self.upperIntVars[2].set(score)
         elif option == "Fours":
             self.scoringOptionVars[3] = 1
-            for i in range(5):
-                if self.dice.diceArray[i].value == 4:
-                    score += 4
+            score = Counter(a)[4]
             self.upperIntVars[3].set(score)
         elif option == "Fives":
             self.scoringOptionVars[4] = 1
-            for i in range(5):
-                if self.dice.diceArray[i].value == 5:
-                    score += 5
+            score = Counter(a)[5]
             self.upperIntVars[4].set(score)
         elif option == "Sixes":
             self.scoringOptionVars[5] = 1
-            for i in range(5):
-                if self.dice.diceArray[i].value == 6:
-                    score += 6
+            score = Counter(a)[6]
             self.upperIntVars[5].set(score)
         elif option == "Three of a Kind":
             self.scoringOptionVars[6] = 1
-            s = set()
-            count = 0
-            for i in range(5):
-                s.add(self.dice.diceArray[i].value)
-                count += self.dice.diceArray[i].value
+            s = set(a)
             if len(s) <= 3:
-                score = count
+                score = self.dice.getTotal()
             self.lowerIntVars[0].set(score)
         elif option == "Four of a Kind":
             self.scoringOptionVars[7] = 1
-            s = set()
-            count = 0
-            for i in range(5):
-                s.add(self.dice.diceArray[i].value)
-                count += self.dice.diceArray[i].value
+            s = set(a)
             if len(s) <= 2:
-                score = count
+                score = self.dice.getTotal()
             self.lowerIntVars[1].set(score)
         elif option == "Full House":
             self.scoringOptionVars[8] = 1
-            arr = []
-            for i in range(5):
-                arr.append(self.dice.diceArray[i].value)
-            c = Counter(arr)
+            c = Counter(a)
             triplet, pair = c.most_common(2)
             if triplet[1] == 3 and pair[1] == 2:
                 score = 25
             self.lowerIntVars[2].set(score)
         elif option == "Small Straight":
             self.scoringOptionVars[9] = 1
-            # insert
-            score = 30
+            for i in range(len(a)):
+                temp = a[0:i] + a[i+1:]
+                if sorted(temp) == list(range(min(temp), max(temp)+1)):
+                    score = 30
+                    break
             self.lowerIntVars[3].set(score)
         elif option == "Large Straight":
             self.scoringOptionVars[10] = 1
@@ -169,16 +149,13 @@ class Game:
             self.lowerIntVars[4].set(score)
         elif option == "Yahtzee":
             self.scoringOptionVars[11] = 1
-            s = set()
-            for i in range(5):
-                s.add(self.dice.diceArray[i].value)
+            s = set(a)
             if len(s) == 1:
                 score = 50
             self.lowerIntVars[5].set(score)
         elif option == "Chance":
             self.scoringOptionVars[12] = 1
-            for i in range(5):
-                score += self.dice.diceArray[i].value
+            score = self.dice.getTotal()
             self.lowerIntVars[6].set(score)
         self.updateScore(option, score)
         self.newRound()

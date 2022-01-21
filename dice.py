@@ -23,3 +23,8 @@ class Dice:
         values = []
         for i in range(self.size):
             values[i].append(self.diceArray[i].value)
+
+    def getTotal(self):
+        total = 0
+        for i in range(self.size):
+            total += self.diceArray[i].value
