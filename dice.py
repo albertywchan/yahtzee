@@ -22,9 +22,11 @@ class Dice:
     def getValues(self):
         values = []
         for i in range(self.size):
-            values[i].append(self.diceArray[i].value)
+            values.append(self.diceArray[i].value)
+        return values
 
     def getTotal(self):
         total = 0
         for i in range(self.size):
             total += self.diceArray[i].value
+        return total

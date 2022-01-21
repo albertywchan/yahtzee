@@ -97,23 +97,23 @@ class Game:
             self.upperIntVars[0].set(score)
         elif option == "Twos":
             self.scoringOptionVars[1] = 1
-            score = Counter(a)[2]
+            score = Counter(a)[2] * 2
             self.upperIntVars[1].set(score)
         elif option == "Threes":
             self.scoringOptionVars[2] = 1
-            score = Counter(a)[3]
+            score = Counter(a)[3] * 3
             self.upperIntVars[2].set(score)
         elif option == "Fours":
             self.scoringOptionVars[3] = 1
-            score = Counter(a)[4]
+            score = Counter(a)[4] * 4
             self.upperIntVars[3].set(score)
         elif option == "Fives":
             self.scoringOptionVars[4] = 1
-            score = Counter(a)[5]
+            score = Counter(a)[5] * 5
             self.upperIntVars[4].set(score)
         elif option == "Sixes":
             self.scoringOptionVars[5] = 1
-            score = Counter(a)[6]
+            score = Counter(a)[6] * 6
             self.upperIntVars[5].set(score)
         elif option == "Three of a Kind":
             self.scoringOptionVars[6] = 1
@@ -171,7 +171,8 @@ class Game:
         elif (option == "Three of a Kind" or option == "Four of a Kind" or option == "Full House"
                 or option == "Small Straight" or option == "Large Straight" or option == "Yahtzee" or option == "Chance"):
             self.lowerIntVars[7].set(self.lowerIntVars[7].get()+score)
-            self.lowerIntVars[9].set(self.lowerIntVars[7].get()+self.lowerIntVars[8].get())
+            self.lowerIntVars[9].set(
+                self.lowerIntVars[7].get()+self.lowerIntVars[8].get())
 
     def initialize(self):
         self.createDiceFrame()
@@ -251,12 +252,15 @@ class Game:
             self.master, text="Lower Score", labelanchor=N)
         lowerFrm.grid(row=1, column=1, rowspan=2,
                       sticky=N, padx=5, pady=(5, 10))
-        self.upperValueLbls = []
+        self.lowerValueLbls = []
+        self.lowerIntVars = []
         lblText = ["Three of a Kind:", "Four of a Kind:", "Full House:", "Small Straight:",
                    "Large Straight:", "Yahtzee:", "Chance:", "Lower Total:", "Yahtzee Bonus:", "Combined Total:"]
         for i in range(10):
+            self.lowerIntVars.append(IntVar())
             tempLbl = ttk.Label(lowerFrm, text=lblText[i])
-            tempValueLbl = ttk.Label(lowerFrm, text="0")
+            tempValueLbl = ttk.Label(
+                lowerFrm, text="0", textvariable=self.lowerIntVars[i])
             if (i == 0):
                 tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(5, 0))
                 tempValueLbl.grid(row=i, column=1, sticky=E,
@@ -272,7 +276,7 @@ class Game:
             else:
                 tempLbl.grid(row=i, column=0, sticky=W, padx=10)
                 tempValueLbl.grid(row=i, column=1, sticky=E, padx=10)
-            self.upperValueLbls.append(tempValueLbl)
+            self.lowerValueLbls.append(tempValueLbl)
 
     def createScoringOptions(self):
         optionFrm = ttk.LabelFrame(
