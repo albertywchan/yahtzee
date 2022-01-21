@@ -18,3 +18,8 @@ class Dice:
         for i in range(self.size):
             d = self.diceArray[i]
             d.draw(x, y + i * 60)
+
+    def getValues(self):
+        values = []
+        for i in range(self.size):
+            values[i].append(self.diceArray[i].value)
