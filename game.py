@@ -23,7 +23,6 @@ class Game:
         self.bonus = False
         self.scoringOptionVars = [0] * 13
         self.initialize()
-        self.updateRolls(True)
         self.dice = Dice(5, self.canvas)
 
     def initialize(self):
@@ -80,15 +79,15 @@ class Game:
             tempLbl = ttk.Label(upperFrm, text=lblText[i])
             tempValueLbl = ttk.Label(
                 upperFrm, text="0", textvariable=self.upperIntVars[i])
-            if (i == 0):
+            if i == 0:
                 tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(5, 0))
                 tempValueLbl.grid(row=i, column=1, sticky=E,
                                   padx=10, pady=(5, 0))
-            elif (i == 5):
+            elif i == 5:
                 tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(0, 20))
                 tempValueLbl.grid(row=i, column=1, sticky=E,
                                   padx=10, pady=(0, 20))
-            elif (i == 8):
+            elif i == 8:
                 tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(0, 10))
                 tempValueLbl.grid(row=i, column=1, sticky=E,
                                   padx=10, pady=(0, 10))
@@ -111,15 +110,15 @@ class Game:
             tempLbl = ttk.Label(lowerFrm, text=lblText[i])
             tempValueLbl = ttk.Label(
                 lowerFrm, text="0", textvariable=self.lowerIntVars[i])
-            if (i == 0):
+            if i == 0:
                 tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(5, 0))
                 tempValueLbl.grid(row=i, column=1, sticky=E,
                                   padx=10, pady=(5, 0))
-            elif (i == 6):
+            elif i == 6:
                 tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(0, 20))
                 tempValueLbl.grid(row=i, column=1, sticky=E,
                                   padx=10, pady=(0, 20))
-            elif (i == 9):
+            elif i == 9:
                 tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(0, 10))
                 tempValueLbl.grid(row=i, column=1, sticky=E,
                                   padx=10, pady=(0, 10))
@@ -139,9 +138,9 @@ class Game:
         for i in range(13):
             tempBtn = ttk.Button(
                 optionFrm, text=btnText[i], width=12, command=lambda option=btnText[i]: self.score(option))
-            if (i == 0):
+            if i == 0:
                 tempBtn.grid(sticky=NSEW, padx=(6, 5), pady=(5, 0))
-            elif (i == 12):
+            elif i == 12:
                 tempBtn.grid(sticky=NSEW, padx=(6, 5), pady=(0, 5))
             else:
                 tempBtn.grid(sticky=NSEW, padx=(6, 5))
@@ -272,7 +271,7 @@ class Game:
             self.lowerIntVars[6].set(score)
         self.updateScore(option, score)
         self.disableScoringOptions()
-        if (self.intRounds < 13):
+        if self.intRounds < 13:
             self.newRound()
         else:
             self.endGame()
@@ -308,7 +307,7 @@ class Game:
     def endGame(self):
         self.disableHoldChecks()
         self.unholdBtn.config(state="disabled")
-        self.rollBtn.config(text="Play Again")
+        self.rollBtn.config(text="Play Again", state="normal")
 
     def newGame(self):
         self.canvas.delete("all")
