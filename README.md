@@ -1,3 +1,3 @@
-# MyMovieList
+# Yahtzee
 
 ![image](screenshot.png)
