@@ -7,8 +7,8 @@ from collections import Counter
 # root
 root = Tk()
 root.title("Yahtzee")
-root.geometry("510x530")
 root.resizable(height=0, width=0)
+root.call('wm', 'iconphoto', root._w, PhotoImage(file="dice.png"))
 
 # --------------------------------------------------------------------------
 
@@ -16,153 +16,142 @@ root.resizable(height=0, width=0)
 class Game:
     def __init__(self, master):
         self.frm = Frame(master)
-        self.frm.grid()
+        self.frm.pack()
         self.master = master
-        self.intRolls = 0
-        self.intRounds = 0
-        self.bonus = False
-        self.scoringOptionVars = [0] * 13
         self.initialize()
-        self.dice = Dice(5, self.canvas)
 
     def initialize(self):
-        self.createDiceFrame()
-        self.createUpperFrame()
-        self.createLowerFrame()
-        self.createScoringOptions()
-        self.createGrandTotal()
-        self.disableHoldChecks()
-        self.disableScoringOptions()
-
-    def createDiceFrame(self):
-        diceFrm = ttk.LabelFrame(self.master, text="Yahtzee", labelanchor=N)
-        diceFrm.grid(row=0, rowspan=3, sticky=N, padx=(10, 5), pady=10)
-        holdLbl = ttk.Label(diceFrm, text="Hold")
-        holdLbl.grid(padx=10, pady=5)
+        #
         self.holdChks = []
         self.holdChkVars = []
+        self.rolls = 0
+        self.rounds = 0
+        self.upperIntVars = []
+        self.lowerIntVars = []
+        self.scoringOptionBtns = []
+        self.scoringOptionVars = [0] * 13
+        self.bonus = False
+        #
+        self.createFirstFrame()
+        self.createSecondFrame()
+        self.createThirdFrame()
+        self.disableHoldChecks()
+        self.disableScoringOptions()
+        #
+        self.dice = Dice(5, self.canvas)
+
+    def createFirstFrame(self):
+        firstFrm = ttk.LabelFrame(self.master, text="Yahtzee", labelanchor=N)
+        firstFrm.pack(side="left", anchor=N, padx=(10,5), pady=10)
+        diceFrm = ttk.Frame(firstFrm)
+        diceFrm.pack()
+        holdChkFrm = ttk.Frame(diceFrm)
+        holdChkFrm.pack(side="left", pady=10)
         for i in range(5):
             self.holdChkVars.append(IntVar())
-            tmpChk = ttk.Checkbutton(diceFrm, variable=self.holdChkVars[i])
-            tmpChk.grid(row=i+1)
+            tmpChk = ttk.Checkbutton(holdChkFrm, variable=self.holdChkVars[i])
+            tmpChk.pack(padx=5, pady=20)
             self.holdChks.append(tmpChk)
-        diceLbl = ttk.Label(diceFrm, text="Dice")
-        diceLbl.grid(row=0, column=1)
-        self.canvas = Canvas(diceFrm, bd=0, highlightthickness=0,
-                             width=75, height=310, bg="dark green")
-        self.canvas.grid(row=1, column=1, rowspan=5, padx=10)
-        self.rollBtn = ttk.Button(diceFrm, text="New Game")
-        self.rollBtn.config(command=lambda: self.roll())
-        self.rollBtn.grid(row=6, columnspan=2, sticky=NSEW,
-                          padx=8, pady=(17, 5))
-        self.unholdBtn = ttk.Button(
-            diceFrm, text="Unhold All", command=lambda: self.unholdAll(), state="disabled")
-        self.unholdBtn.grid(row=7, columnspan=2,
-                            sticky=NSEW, padx=8, pady=(5, 5))
-        self.rollLbl = ttk.Label(
-            diceFrm, text="0/3 Rolls", anchor="center")
-        self.rollLbl.grid(row=8, columnspan=2, padx=8, pady=(5, 5))
-        self.roundLbl = ttk.Label(
-            diceFrm, text="Round 0/13", anchor="center")
-        self.roundLbl.grid(row=9, columnspan=2, padx=8, pady=(5, 10))
+        self.canvas = Canvas(diceFrm, bd=0, highlightthickness=0, width=75, height=310, bg="dark green")
+        self.canvas.pack(side="left", pady=10)        
+        self.rollBtn = ttk.Button(firstFrm, text="New Game", command=lambda: self.roll(),width=12)
+        self.rollBtn.pack(fill="both", padx=5, pady=8)
+        self.unholdBtn = ttk.Button(firstFrm, text="Unhold All", command=lambda: self.unholdAll(), state="disabled")
+        self.unholdBtn.pack(fill="both", padx=5, pady=8)
+        self.rollLbl = ttk.Label(firstFrm, text="0/3 Rolls", anchor="center")
+        self.rollLbl.pack(fill="both", padx=5, pady=8)
+        self.roundLbl = ttk.Label(firstFrm, text="Round 0/13", anchor="center")
+        self.roundLbl.pack(fill="both", padx=5, pady=8)
 
-    def createUpperFrame(self):
-        upperFrm = ttk.LabelFrame(
-            self.master, text="Upper Score", labelanchor=N)
-        upperFrm.grid(row=0, column=1, sticky=N+E+W, padx=5, pady=(10, 5))
-        self.upperValueLbls = []
-        self.upperIntVars = []
+    def createSecondFrame(self):
+        secondFrm = ttk.Frame(self.master)
+        secondFrm.pack(side="left", anchor=N, padx=5, pady=10)
+        # upper frame
+        upperFrm = ttk.LabelFrame(secondFrm, text="Upper Score", labelanchor=N)
+        upperFrm.pack()
+        upperLeftFrm = ttk.Frame(upperFrm)
+        upperLeftFrm.pack(side="left")
+        upperRightFrm = ttk.Frame(upperFrm)
+        upperRightFrm.pack(side="left")
         lblText = ["Ones:", "Twos:", "Threes:", "Fours:", "Fives:",
                    "Sixes:", "Total:", "Bonus:", "Upper Total:      "]
         for i in range(9):
             self.upperIntVars.append(IntVar())
-            tempLbl = ttk.Label(upperFrm, text=lblText[i])
-            tempValueLbl = ttk.Label(
-                upperFrm, text="0", textvariable=self.upperIntVars[i])
+            tempLbl = ttk.Label(upperLeftFrm, text=lblText[i], anchor=W, width=12)
+            tempValueLbl = ttk.Label(upperRightFrm, text="0", textvariable=self.upperIntVars[i], anchor=E, width=3)
             if i == 0:
-                tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(5, 0))
-                tempValueLbl.grid(row=i, column=1, sticky=E,
-                                  padx=10, pady=(5, 0))
+                tempLbl.pack(padx=10, pady=(5,0))
+                tempValueLbl.grid(padx=5, pady=(5,0))
             elif i == 5:
-                tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(0, 20))
-                tempValueLbl.grid(row=i, column=1, sticky=E,
-                                  padx=10, pady=(0, 20))
+                tempLbl.pack(padx=10, pady=(0,20))
+                tempValueLbl.grid(padx=5, pady=(0,20))
             elif i == 8:
-                tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(0, 10))
-                tempValueLbl.grid(row=i, column=1, sticky=E,
-                                  padx=10, pady=(0, 10))
+                tempLbl.pack(padx=10, pady=(0,10))
+                tempValueLbl.grid(padx=5, pady=(0,10))
             else:
-                tempLbl.grid(row=i, column=0, sticky=W, padx=10)
-                tempValueLbl.grid(row=i, column=1, sticky=E, padx=10)
-            self.upperValueLbls.append(tempValueLbl)
-
-    def createLowerFrame(self):
-        lowerFrm = ttk.LabelFrame(
-            self.master, text="Lower Score", labelanchor=N)
-        lowerFrm.grid(row=1, column=1, rowspan=2,
-                      sticky=N, padx=5, pady=(5, 10))
-        self.lowerValueLbls = []
-        self.lowerIntVars = []
+                tempLbl.pack()
+                tempValueLbl.grid(padx=10)
+        #
+        gap = Canvas(secondFrm, bg="white", height=2, width=12)
+        gap.pack(fill="both")
+        # lower frame
+        lowerFrm = ttk.LabelFrame(secondFrm, text="Upper Score", labelanchor=N)
+        lowerFrm.pack()
+        lowerLeftFrm = ttk.Frame(lowerFrm)
+        lowerLeftFrm.pack(side="left")
+        lowerRightFrm = ttk.Frame(lowerFrm)
+        lowerRightFrm.pack(side="left")
         lblText = ["Three of a Kind:", "Four of a Kind:", "Full House:", "Small Straight:",
                    "Large Straight:", "Yahtzee:", "Chance:", "Lower Total:", "Yahtzee Bonus:", "Combined Total:"]
         for i in range(10):
             self.lowerIntVars.append(IntVar())
-            tempLbl = ttk.Label(lowerFrm, text=lblText[i])
-            tempValueLbl = ttk.Label(
-                lowerFrm, text="0", textvariable=self.lowerIntVars[i])
+            tempLbl = ttk.Label(lowerLeftFrm, text=lblText[i], anchor=W, width=12)
+            tempValueLbl = ttk.Label(lowerRightFrm, text="0", textvariable=self.lowerIntVars[i], anchor=E, width=3)
             if i == 0:
-                tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(5, 0))
-                tempValueLbl.grid(row=i, column=1, sticky=E,
-                                  padx=10, pady=(5, 0))
+                tempLbl.pack(padx=10, pady=(5,0))
+                tempValueLbl.pack(padx=10, pady=(5,0))
             elif i == 6:
-                tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(0, 20))
-                tempValueLbl.grid(row=i, column=1, sticky=E,
-                                  padx=10, pady=(0, 20))
+                tempLbl.pack(padx=10, pady=(0,20))
+                tempValueLbl.pack(padx=10, pady=(0,20))
             elif i == 9:
-                tempLbl.grid(row=i, column=0, sticky=W, padx=10, pady=(0, 10))
-                tempValueLbl.grid(row=i, column=1, sticky=E,
-                                  padx=10, pady=(0, 10))
+                tempLbl.pack(padx=10, pady=(0,10))
+                tempValueLbl.pack(padx=10, pady=(0,10))
             else:
-                tempLbl.grid(row=i, column=0, sticky=W, padx=10)
-                tempValueLbl.grid(row=i, column=1, sticky=E, padx=10)
-            self.lowerValueLbls.append(tempValueLbl)
+                tempLbl.pack()
+                tempValueLbl.pack(padx=10)
 
-    def createScoringOptions(self):
-        optionFrm = ttk.LabelFrame(
-            self.master, text="Scoring Options", labelanchor=N)
-        optionFrm.grid(row=0, column=2, rowspan=2, sticky=N +
-                       E+W, padx=(5, 10), pady=(10, 5))
-        self.scoringOptionBtns = []
+    def createThirdFrame(self):
+        thirdFrm = ttk.Frame(self.master)
+        thirdFrm.pack(side="left", anchor=N, padx=(5,10), pady=10)
+        btnFrm = ttk.LabelFrame(thirdFrm, text="Scoring Options", labelanchor=N)
+        btnFrm.pack()
         btnText = ["Ones", "Twos", "Threes", "Fours", "Fives", "Sixes", "Three of a Kind",
                    "Four of a Kind", "Full House", "Small Straight", "Large Straight", "Yahtzee", "Chance"]
         for i in range(13):
-            tempBtn = ttk.Button(
-                optionFrm, text=btnText[i], width=12, command=lambda option=btnText[i]: self.score(option))
+            tempBtn = ttk.Button(btnFrm, text=btnText[i], command=lambda option=btnText[i]: self.score(option), width=12)
             if i == 0:
-                tempBtn.grid(sticky=NSEW, padx=(6, 5), pady=(5, 0))
+                tempBtn.pack(fill="both", padx=5, pady=(5,0))
             elif i == 12:
-                tempBtn.grid(sticky=NSEW, padx=(6, 5), pady=(0, 5))
+                tempBtn.pack(fill="both", padx=5, pady=(0,5))
             else:
-                tempBtn.grid(sticky=NSEW, padx=(6, 5))
+                tempBtn.pack(fill="both", padx=5)
             self.scoringOptionBtns.append(tempBtn)
-
-    def createGrandTotal(self):
-        self.grandTotalLbl = ttk.Label(self.master, text="Grand\nTotal\n0", font=(
-            "", "18", "bold"), borderwidth=5, relief="ridge", anchor="center", justify="center", width=12)
-        self.grandTotalLbl.grid(
-            row=2, column=2, sticky=N+E+W, padx=(5, 10), pady=10)
+        gap = Canvas(thirdFrm, bg="white", height=2, width=12)
+        gap.pack(fill="both")
+        self.grandTotalLbl = ttk.Label(thirdFrm, text="Grand\nTotal\n0", font=("", "18", "bold"), borderwidth=5, relief="ridge", anchor="center", justify="center", width=12)
+        self.grandTotalLbl.pack()    
 
     def updateRound(self):
-        self.intRounds += 1
-        self.roundLbl.config(text="Round " + str(self.intRounds) + "/13")
+        self.rounds += 1
+        self.roundLbl.config(text="Round " + str(self.rounds) + "/13")
 
     def updateRolls(self, reset):
         if reset:
-            self.intRolls = 0
+            self.rolls = 0
             self.rollLbl.config(text="0/3 Rolls")
         else:
-            self.intRolls += 1
-            self.rollLbl.config(text=str(self.intRolls) + "/3 Rolls")
+            self.rolls += 1
+            self.rollLbl.config(text=str(self.rolls) + "/3 Rolls")
 
     def roll(self):
         text = self.rollBtn.cget("text")
@@ -178,7 +167,7 @@ class Game:
             elif text == "Roll":
                 self.updateRolls(False)
             self.rollBtn.config(text="Roll")
-            if self.intRolls == 3:
+            if self.rolls == 3:
                 self.disableHoldChecks()
                 self.rollBtn.config(state="disabled")
                 self.unholdBtn.config(state="disabled")
@@ -271,7 +260,7 @@ class Game:
             self.lowerIntVars[6].set(score)
         self.updateScore(option, score)
         self.disableScoringOptions()
-        if self.intRounds < 13:
+        if self.rounds < 13:
             self.newRound()
         else:
             self.endGame()
@@ -283,9 +272,11 @@ class Game:
         elif (option == "Three of a Kind" or option == "Four of a Kind" or option == "Full House"
                 or option == "Small Straight" or option == "Large Straight" or option == "Yahtzee" or option == "Chance"):
             self.lowerIntVars[7].set(self.lowerIntVars[7].get()+score)
+        # lower bonus
         if self.upperIntVars[6].get() >= 63:
                 self.upperIntVars[7].set(35)
         self.upperIntVars[8].set(self.upperIntVars[6].get()+self.upperIntVars[7].get())
+        # yahtzee bonus
         values = self.dice.getValues()
         if len(set(values)) == 1 and self.bonus:
             self.lowerIntVars[8].set(self.lowerIntVars[8].get()+100)
@@ -312,7 +303,7 @@ class Game:
     def newGame(self):
         self.canvas.delete("all")
         self.rollBtn.config(text="Start Round")
-        self.intRounds = -1
+        self.rounds = -1
         self.updateRound()
         self.updateRolls(True)
         self.bonus = False
