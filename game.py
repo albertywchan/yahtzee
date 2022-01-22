@@ -20,6 +20,8 @@ class Game:
         self.master = master
         self.intRolls = 0
         self.intRounds = 0
+        self.bonus = False
+        self.scoringOptionVars = [0] * 13
         self.initialize()
         self.updateRolls(True)
         self.dice = Dice(5, self.canvas)
@@ -31,9 +33,7 @@ class Game:
         self.createScoringOptions()
         self.createGrandTotal()
         self.disableHoldChecks()
-        self.unholdBtn.config(state="disabled")
         self.disableScoringOptions()
-        self.scoringOptionVars = [0] * 13
 
     def createDiceFrame(self):
         diceFrm = ttk.LabelFrame(self.master, text="Yahtzee", labelanchor=N)
@@ -57,7 +57,7 @@ class Game:
         self.rollBtn.grid(row=6, columnspan=2, sticky=NSEW,
                           padx=8, pady=(17, 5))
         self.unholdBtn = ttk.Button(
-            diceFrm, text="Unhold All", command=lambda: self.unholdAll())
+            diceFrm, text="Unhold All", command=lambda: self.unholdAll(), state="disabled")
         self.unholdBtn.grid(row=7, columnspan=2,
                             sticky=NSEW, padx=8, pady=(5, 5))
         self.rollLbl = ttk.Label(
@@ -281,15 +281,18 @@ class Game:
         if (option == "Ones" or option == "Twos" or option == "Threes" or option == "Fours"
                 or option == "Fives" or option == "Sixes"):
             self.upperIntVars[6].set(self.upperIntVars[6].get()+score)
-            if (self.upperIntVars[6].get() >= 63):
-                self.upperIntVars[7].set(35)
-            self.upperIntVars[8].set(
-                self.upperIntVars[6].get()+self.upperIntVars[7].get())
         elif (option == "Three of a Kind" or option == "Four of a Kind" or option == "Full House"
                 or option == "Small Straight" or option == "Large Straight" or option == "Yahtzee" or option == "Chance"):
             self.lowerIntVars[7].set(self.lowerIntVars[7].get()+score)
-            self.lowerIntVars[9].set(
-                self.lowerIntVars[7].get()+self.lowerIntVars[8].get())
+        if self.upperIntVars[6].get() >= 63:
+                self.upperIntVars[7].set(35)
+        self.upperIntVars[8].set(self.upperIntVars[6].get()+self.upperIntVars[7].get())
+        values = self.dice.getValues()
+        if len(set(values)) == 1 and self.bonus:
+            self.lowerIntVars[8].set(self.lowerIntVars[8].get()+100)
+        self.lowerIntVars[9].set(self.lowerIntVars[7].get()+self.lowerIntVars[8].get())
+        if option == "Yahtzee":
+                self.bonus = True       
         grandTotal = "Grand\nTotal\n" + \
             str(self.upperIntVars[8].get()+self.lowerIntVars[9].get())
         self.grandTotalLbl.config(text=grandTotal)
@@ -313,6 +316,7 @@ class Game:
         self.intRounds = -1
         self.updateRound()
         self.updateRolls(True)
+        self.bonus = False
         for i in range(13):
             if i < 9:
                 self.upperIntVars[i].set(0)
