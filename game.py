@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from dice import Dice
 from collections import Counter
+from PIL import Image, ImageTk
 
 # root
 root = Tk()
@@ -10,7 +11,7 @@ root.title("Yahtzee")
 root.resizable(height=0, width=0)
 root.call('wm', 'iconphoto', root._w, PhotoImage(file="dice.png"))
 
-# --------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------
 
 
 class Game:
@@ -21,7 +22,7 @@ class Game:
         self.initialize()
 
     def initialize(self):
-        #
+        # variables
         self.holdChks = []
         self.holdChkVars = []
         self.rolls = 0
@@ -31,13 +32,17 @@ class Game:
         self.scoringOptionBtns = []
         self.scoringOptionVars = [0] * 13
         self.bonus = False
-        #
+        # dice image
+        diceImg = Image.open("dice.png")
+        self.resizedDiceImg = ImageTk.PhotoImage(
+            diceImg.resize((63, 63), Image.ANTIALIAS))
+        # create frames
         self.createFirstFrame()
         self.createSecondFrame()
         self.createThirdFrame()
         self.disableHoldChecks()
         self.disableScoringOptions()
-        #
+        # initialize dice
         self.dice = Dice(5, self.canvas)
 
     def createFirstFrame(self):
@@ -96,7 +101,7 @@ class Game:
             else:
                 tempLbl.pack()
                 tempValueLbl.grid(padx=10)
-        #
+        # gap to fill
         gap = Canvas(secondFrm, bg="white", height=2, width=12)
         gap.pack(fill="both")
         # lower frame
@@ -150,6 +155,8 @@ class Game:
         self.grandTotalLbl = ttk.Label(thirdFrm, text="Grand\nTotal\n0", font=(
             "", "18", "bold"), borderwidth=5, relief="ridge", anchor="center", justify="center", width=12)
         self.grandTotalLbl.pack()
+        imgLbl = Label(thirdFrm, image=self.resizedDiceImg)
+        imgLbl.pack(side="bottom", fill="both", expand="yes", ipady=5)
 
     def updateRound(self):
         self.rounds += 1
