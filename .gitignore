@@ -1,6 +1,3 @@
- __pycache__/
- *.pyc 
-test.py
 .gitignore
 __pycache__/die.cpython-39.pyc
 __pycache__/dice.cpython-39.pyc
